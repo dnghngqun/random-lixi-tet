@@ -22,10 +22,6 @@ const MAX_SPINS = 3
 const SPIN_DURATION = 4400
 const SPIN_ROUNDS = 8
 const CONFETTI_LIFETIME = 2400
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8787').replace(
-  /\/$/,
-  '',
-)
 const AMOUNTS = Array.from({ length: 15 }, (_, index) => (index + 1) * 10)
 const WEIGHTS = [30, 27, 24, 21, 18, 15, 13, 11, 9, 7, 5, 4, 3, 2, 1]
 const SEGMENT_COLORS = [
@@ -108,7 +104,6 @@ function loadStoredState() {
       participants[key] = {
         name: value.name,
         spins: safeSpins,
-        emailSentAt: typeof value.emailSentAt === 'string' ? value.emailSentAt : null,
       }
     })
 
@@ -173,43 +168,6 @@ function createConfettiPieces(pieceCount) {
   }))
 }
 
-async function sendCompletionEmail({ participantName, participantKey, spins, total, finishedAt }) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/send-result`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        participantName,
-        participantKey,
-        spins,
-        total,
-        finishedAt,
-      }),
-    })
-
-    const payload = await response.json().catch(() => null)
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        message: payload?.message ?? 'Khong the gui email ket qua luc nay.',
-      }
-    }
-
-    return {
-      ok: true,
-      message: payload?.message ?? 'Email ket qua da gui thanh cong.',
-    }
-  } catch {
-    return {
-      ok: false,
-      message: 'Khong ket noi duoc may chu gui email. Hay kiem tra server backend.',
-    }
-  }
-}
-
 function App() {
   const [gameState, setGameState] = useState(() => loadStoredState())
   const [rotation, setRotation] = useState(0)
@@ -254,7 +212,6 @@ function App() {
             total,
             best,
             lastSpin,
-            emailSentAt: participant.emailSentAt ?? null,
           }
         })
         .sort((first, second) => {
@@ -359,7 +316,6 @@ function App() {
           [participantKey]: {
             name: cleanName,
             spins: existingParticipant?.spins ?? [],
-            emailSentAt: existingParticipant?.emailSentAt ?? null,
           },
         }
 
@@ -708,50 +664,15 @@ function App() {
       })
 
       if (currentSpins + 1 === MAX_SPINS) {
-        const finishedAt = new Date().toISOString()
-        const completedSpins = [...activeSpins, spinRecord]
         const grandTotal = currentTotal + selectedAmount
 
         launchConfetti(70)
         playGrandWinSound()
 
-        const emailResult = await sendCompletionEmail({
-          participantName: activeName,
-          participantKey: activeKey,
-          spins: completedSpins,
-          total: grandTotal,
-          finishedAt,
-        })
-
-        if (emailResult.ok) {
-          setGameState((prev) => {
-            const participant = prev.participants[activeKey]
-
-            if (!participant) {
-              return prev
-            }
-
-            return {
-              ...prev,
-              participants: {
-                ...prev.participants,
-                [activeKey]: {
-                  ...participant,
-                  emailSentAt: finishedAt,
-                },
-              },
-            }
-          })
-        }
-
-        const emailStatusHtml = emailResult.ok
-          ? '<br/><span class="mail-success">Email ket qua da gui thanh cong.</span>'
-          : `<br/><span class="mail-failed">${emailResult.message}</span>`
-
         await Swal.fire({
           icon: 'success',
           title: `Hoàn tất 3 lượt quay - ${activeName}`,
-          html: `Tổng tiền thưởng của bạn là <strong>${formatAmount(grandTotal)}</strong>.<br/>Chúc mừng năm mới 2026 phát tài phát lộc!${emailStatusHtml}`,
+          html: `Tổng tiền thưởng của bạn là <strong>${formatAmount(grandTotal)}</strong>.<br/>Chúc mừng năm mới 2026 phát tài phát lộc!`,
           confirmButtonText: 'Nhận lì xì',
           buttonsStyling: false,
           customClass: {
@@ -798,7 +719,7 @@ function App() {
       <div className="sticker sticker-5">🎊</div>
 
       <header className="hero-card">
-        <p className="year-badge">XUAN BINH NGO 2026</p>
+        <p className="year-badge">XUÂN BÍNH NGỌ 2026</p>
         <h1>Vòng Quay Lì Xì Tết 2026</h1>
         <p className="hero-text">
           Quay lểnh lảng, nhận lộc ngập tràn. Mệnh giá cao hơn có tỉ lệ thấp hơn để
@@ -972,7 +893,7 @@ function App() {
                 disabled={isSpinning || spinsLeft === 0}
               >
                 <FaGift />
-                {isSpinning ? 'Dang quay...' : 'Quay nhận lì xì'}
+                {isSpinning ? 'Đang quay...' : 'Quay nhận lì xì'}
               </button>
             </div>
 
@@ -1050,12 +971,7 @@ function App() {
                       <p>
                         {player.spins}/{MAX_SPINS} lượt - Cao nhất{' '}
                         {formatAmount(player.best)} - Lần cuối{' '}
-                        {player.lastSpin ? formatTimestamp(player.lastSpin) : '--:--'} -{' '}
-                        {player.spins === MAX_SPINS
-                          ? player.emailSentAt
-                            ? `Email: da gui ${formatTimestamp(player.emailSentAt)}`
-                            : 'Email: chua gui'
-                          : 'Email: cho du 3 luot'}
+                        {player.lastSpin ? formatTimestamp(player.lastSpin) : '--:--'}
                       </p>
                     </div>
 

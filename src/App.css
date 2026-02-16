@@ -768,20 +768,6 @@
   font-size: 0.95rem;
 }
 
-.tet-alert-text .mail-success {
-  display: inline-block;
-  margin-top: 6px;
-  color: #157244;
-  font-weight: 700;
-}
-
-.tet-alert-text .mail-failed {
-  display: inline-block;
-  margin-top: 6px;
-  color: #a7212d;
-  font-weight: 700;
-}
-
 .tet-alert-input {
   border-radius: 10px !important;
   border: 1px solid #e6b968 !important;
