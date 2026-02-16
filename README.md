@@ -1,16 +1,52 @@
-# React + Vite
+# Vong Quay Li Xi Tet 2026
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Web ReactJS giao dien Tet 2026 + backend Node.js de gui email ket qua khi nguoi choi quay du 3 luot.
 
-Currently, two official plugins are available:
+## Chuc nang chinh
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Vong quay menh gia tu `10k` den `150k`, menh gia cao co xac suat thap hon.
+- Popup nhap ten nguoi choi bang SweetAlert2.
+- Moi nguoi choi toi da `3` luot quay.
+- Luu du lieu nguoi choi + lich su quay vao localStorage.
+- Hieu ung confetti, am thanh, bang vang xep hang.
+- Tu dong gui email ket qua khi nguoi choi vua hoan tat luot quay thu 3.
 
-## React Compiler
+## Cai dat
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+```
 
-## Expanding the ESLint configuration
+## Cau hinh email
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Du an doc bien moi truong tu file `.env` (xem mau tai `.env.example`).
+
+Bat buoc:
+
+- `MAIL_USER`: Gmail gui mail
+- `MAIL_APP_PASSWORD`: app password Gmail
+- `MAIL_TO`: email nhan ket qua
+- `VITE_API_BASE_URL`: URL backend mail API
+
+## Chay local
+
+```bash
+npm run dev
+```
+
+Lenh nay chay dong thoi:
+
+- frontend Vite: `http://localhost:5173`
+- backend mail API: `http://localhost:8787`
+
+## Build frontend
+
+```bash
+npm run build
+```
+
+## Test API backend nhanh
+
+```bash
+curl http://localhost:8787/api/health
+```
